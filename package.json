@@ -1,0 +1,20 @@
+{
+  "name": "human-boilerplate",
+  "version": "0.0.0",
+  "description": "Single Page App Boilerplate for Humans",
+  "browser": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Clemens Stolle",
+  "license": "MIT",
+  "devDependencies": {
+    "less": "^1.7.0",
+    "browserify": "^3.32.1",
+    "st": "^0.3.1",
+    "watch": "^0.9.0",
+    "watchify": "^0.6.2"
+  },
+  "dependencies": {}
+}

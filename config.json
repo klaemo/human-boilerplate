@@ -1,0 +1,6 @@
+{
+  "public": "public",
+  "entrypoint": "app.js",
+  "styles": "styles",
+  "templates": "templates"
+}
