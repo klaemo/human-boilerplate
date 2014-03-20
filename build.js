@@ -11,37 +11,49 @@ function onError (err) {
   process.exit(1)
 }
 
-exports.templates = function buildTemplates() {
+exports.templates = function buildTemplates(cb) {
   var dest = path.join(config.templates, 'templates.js')
-  templatizer(config.templates, dest, { compileDebug: true })
+  try {
+    templatizer(config.templates, dest, { compileDebug: true })
+  } catch(err) {
+    return cb(err)
+  }
+  cb()
 }
 
-exports.js = function buildJS(watchify) {
+exports.js = function buildJS(watchify, cb) {
   var templates = path.join(config.templates, 'templates.js')
   var dest = path.join(config.public, 'app.bundle.js')
   
   watchify
-    .require(require.resolve('./' + config.entrypoint), { entry: true })
+    .add(require.resolve('./' + config.entrypoint))
     .require(require.resolve('./' + templates), { expose: 'templates' })
     .bundle({ debug: true })
     .on('error', onError)
     .pipe(fs.createWriteStream(dest))
     .on('error', onError)
+    .on('close', cb)
 }
 
-exports.css = function buildCSS() {
+exports.css = function buildCSS(cb) {
   var parser = new(less.Parser)({
     paths: [ './' + config.styles ], // Specify search paths for @import directives
     filename: 'app.less' // Specify a filename, for better error messages
   })
 
-  parser.parse(fs.readFileSync(path.join(config.styles, 'app.less'), 'utf-8'), function (err, tree) {
-    if (err) return console.error(err)
+  fs.readFile(path.join(config.styles, 'app.less'), 'utf-8', function (err, file) {
+    if (err) return cb(err)
 
-    fs.writeFileSync(path.join(config.public, 'app.bundle.css'), tree.toCSS({
-      sourceMap: true,
-      // sourceMapFilename: 'tmp/sourceMapLessInline.css.map',
-      outputSourceFiles: true,
-    }), 'utf8');
+    parser.parse(file, function (err, tree) {
+      if (err) return cb(err)
+      
+      var css = tree.toCSS({
+        sourceMap: true,
+        // sourceMapFilename: 'tmp/sourceMapLessInline.css.map',
+        outputSourceFiles: true,
+      })
+
+      fs.writeFile(path.join(config.public, 'app.bundle.css'), css, cb)
+    })
   })
 }

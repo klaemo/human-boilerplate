@@ -9,7 +9,14 @@ var watchify = require('watchify')
 var config = require('./config.json')
 var build = require('./build')
 
-build.templates()
+function callback (err) {
+  if (err) return console.error(err)
+}
+
+/**
+ * build and watch templates
+ */
+build.templates(callback)
 watch.watchTree(path.join(__dirname, config.templates), {
   ignoreDotFiles: true,
   filter: function (file) {
@@ -17,19 +24,23 @@ watch.watchTree(path.join(__dirname, config.templates), {
     return true
   },
 }, function (file) {
-  build.templates()
-  console.log('>>> rebuilt templates')
+  build.templates(callback)
 })
 
+/**
+ * watch styles directory
+ */
 watch.watchTree(path.join(__dirname, config.styles), {
   ignoreDotFiles: true,
 }, function (file) {
-  build.css()
-  console.log('>>> rebuilt css')
+  build.css(callback)
 })
 
+/**
+ * build and watch javascript
+ */
 var w = watchify()
-build.js(w)
+build.js(w, callback)
 
 function onError (err) {
   console.error(err)
@@ -43,12 +54,15 @@ w.on('update', function (ids) {
     .on('error', onError)
     .pipe(fs.createWriteStream(dest))
     .on('error', onError)
-
-  console.log('>>> rebuilt js')
 })
 
+/**
+ * start a little static file server
+ */
 http.createServer(st({
   path: config.public,
   cache: false,
   index: 'index.html'
-})).listen(3000)
+})).listen(3000, function () {
+  console.log('Ready for you at http://localhost:3000')
+})
