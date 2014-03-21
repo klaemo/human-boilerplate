@@ -2,5 +2,7 @@
   "public": "public",
   "entrypoint": "app.js",
   "styles": "styles",
-  "templates": "templates"
+  "templates": "templates",
+  "debug": true,
+  "browserify": {}
 }

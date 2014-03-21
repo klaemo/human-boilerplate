@@ -14,7 +14,7 @@ function onError (err) {
 exports.templates = function buildTemplates(cb) {
   var dest = path.join(config.templates, 'templates.js')
   try {
-    templatizer(config.templates, dest, { compileDebug: true })
+    templatizer(config.templates, dest, { compileDebug: config.debug })
   } catch(err) {
     return cb(err)
   }
@@ -28,7 +28,7 @@ exports.js = function buildJS(watchify, cb) {
   watchify
     .add(require.resolve('./' + config.entrypoint))
     .require(require.resolve('./' + templates), { expose: 'templates' })
-    .bundle({ debug: true })
+    .bundle({ debug: config.debug })
     .on('error', onError)
     .pipe(fs.createWriteStream(dest))
     .on('error', onError)
