@@ -42,18 +42,13 @@ watch.watchTree(path.join(__dirname, config.styles), {
 var w = watchify()
 build.js(w, callback)
 
-function onError (err) {
-  console.error(err)
-  process.exit(1)
-}
-
 w.on('update', function (ids) {
   var dest = path.join(config.public, 'app.bundle.js')
 
   w.bundle({ debug: true })
-    .on('error', onError)
+    .on('error', callback)
     .pipe(fs.createWriteStream(dest))
-    .on('error', onError)
+    .on('error', callback)
 })
 
 /**
