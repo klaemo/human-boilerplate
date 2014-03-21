@@ -49,7 +49,7 @@ exports.css = function buildCSS(cb) {
       
       var css = tree.toCSS({
         sourceMap: true,
-        // sourceMapFilename: 'tmp/sourceMapLessInline.css.map',
+        sourceMapFilename: 'tmp/sourceMapLessInline.css.map',
         outputSourceFiles: true,
       })
 
